@@ -695,6 +695,703 @@
                         What specific actions could this person take to improve?
                       </label>
                       <textarea
+                          <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360-Degree Feedback Form</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        function Feedback360Form() {
+          const [formData, setFormData] = useState({
+            // Reviewer Information
+            reviewerName: '',
+            reviewerRelationship: '',
+            reviewDate: '',
+            anonymous: false,
+            
+            // Employee Being Reviewed
+            employeeName: '',
+            employeeId: '',
+            employeePosition: '',
+            employeeDepartment: '',
+            
+            // Leadership & Vision
+            vision: 0,
+            strategicThinking: 0,
+            decisionMaking: 0,
+            accountability: 0,
+            delegation: 0,
+            
+            // Communication Skills
+            verbalCommunication: 0,
+            writtenCommunication: 0,
+            activeListening: 0,
+            clarity: 0,
+            feedback: 0,
+            
+            // Teamwork & Collaboration
+            collaboration: 0,
+            supportiveness: 0,
+            conflictResolution: 0,
+            respect: 0,
+            teamContribution: 0,
+            
+            // Professional Competence
+            technicalSkills: 0,
+            problemSolving: 0,
+            innovation: 0,
+            quality: 0,
+            expertise: 0,
+            
+            // Interpersonal Skills
+            empathy: 0,
+            trustworthiness: 0,
+            professionalism: 0,
+            adaptability: 0,
+            emotional: 0,
+            
+            // Work Ethics & Reliability
+            integrity: 0,
+            dependability: 0,
+            initiative: 0,
+            timeManagement: 0,
+            commitment: 0,
+            
+            // Customer/Client Focus
+            customerService: 0,
+            responsiveness: 0,
+            relationship: 0,
+            expectations: 0,
+            
+            // Development & Growth
+            learning: 0,
+            openness: 0,
+            selfAwareness: 0,
+            improvement: 0,
+            
+            // Open-Ended Questions
+            strengths: '',
+            weaknesses: '',
+            improvement: '',
+            stopDoing: '',
+            startDoing: '',
+            continueDoing: '',
+            additionalComments: '',
+            
+            // Overall Rating
+            overallRating: '',
+            wouldRecommend: ''
+          });
+
+          const handleInputChange = (e) => {
+            const { name, value, type, checked } = e.target;
+            setFormData(prev => ({
+              ...prev,
+              [name]: type === 'checkbox' ? checked : value
+            }));
+          };
+
+          const calculateScore = (category) => {
+            const categories = {
+              leadership: ['vision', 'strategicThinking', 'decisionMaking', 'accountability', 'delegation'],
+              communication: ['verbalCommunication', 'writtenCommunication', 'activeListening', 'clarity', 'feedback'],
+              teamwork: ['collaboration', 'supportiveness', 'conflictResolution', 'respect', 'teamContribution'],
+              competence: ['technicalSkills', 'problemSolving', 'innovation', 'quality', 'expertise'],
+              interpersonal: ['empathy', 'trustworthiness', 'professionalism', 'adaptability', 'emotional'],
+              workEthics: ['integrity', 'dependability', 'initiative', 'timeManagement', 'commitment'],
+              customer: ['customerService', 'responsiveness', 'relationship', 'expectations'],
+              development: ['learning', 'openness', 'selfAwareness', 'improvement']
+            };
+            
+            const fields = categories[category];
+            const total = fields.reduce((sum, field) => sum + (parseInt(formData[field]) || 0), 0);
+            const max = fields.length * 5;
+            return { total, max, percentage: max > 0 ? ((total / max) * 100).toFixed(1) : 0 };
+          };
+
+          const calculateOverallScore = () => {
+            const allFields = [
+              'vision', 'strategicThinking', 'decisionMaking', 'accountability', 'delegation',
+              'verbalCommunication', 'writtenCommunication', 'activeListening', 'clarity', 'feedback',
+              'collaboration', 'supportiveness', 'conflictResolution', 'respect', 'teamContribution',
+              'technicalSkills', 'problemSolving', 'innovation', 'quality', 'expertise',
+              'empathy', 'trustworthiness', 'professionalism', 'adaptability', 'emotional',
+              'integrity', 'dependability', 'initiative', 'timeManagement', 'commitment',
+              'customerService', 'responsiveness', 'relationship', 'expectations',
+              'learning', 'openness', 'selfAwareness', 'improvement'
+            ];
+            
+            const total = allFields.reduce((sum, field) => sum + (parseInt(formData[field]) || 0), 0);
+            const max = allFields.length * 5;
+            return { total, max, percentage: max > 0 ? ((total / max) * 100).toFixed(1) : 0 };
+          };
+
+          const handlePrint = () => {
+            window.print();
+          };
+
+          const ScoreInput = ({ label, name, value, description }) => (
+            <div className="py-3 border-b border-gray-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-gray-700 block">{label}</label>
+                  {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
+                </div>
+                <div className="flex gap-2 ml-4">
+                  {[1, 2, 3, 4, 5].map(score => (
+                    <label key={score} className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name={name}
+                        value={score}
+                        checked={parseInt(value) === score}
+                        onChange={handleInputChange}
+                        className="mr-1"
+                      />
+                      <span className="text-sm">{score}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+
+          const leadershipScore = calculateScore('leadership');
+          const communicationScore = calculateScore('communication');
+          const teamworkScore = calculateScore('teamwork');
+          const competenceScore = calculateScore('competence');
+          const interpersonalScore = calculateScore('interpersonal');
+          const workEthicsScore = calculateScore('workEthics');
+          const customerScore = calculateScore('customer');
+          const developmentScore = calculateScore('development');
+          const overallScore = calculateOverallScore();
+
+          return (
+            <div className="min-h-screen bg-gray-50 p-8">
+              <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden print:shadow-none">
+                <div className="bg-purple-600 text-white p-6 print:bg-purple-700">
+                  <h1 className="text-3xl font-bold text-center">360-Degree Feedback Form</h1>
+                  <p className="text-center text-purple-100 mt-2">Comprehensive Multi-Rater Assessment</p>
+                </div>
+
+                <div className="flex gap-4 p-6 border-b print:hidden">
+                  <button
+                    onClick={handlePrint}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+                  >
+                    🖨️ Print
+                  </button>
+                </div>
+
+                <div className="p-8">
+                  {/* Important Notice */}
+                  <section className="mb-8 p-4 bg-purple-50 rounded border border-purple-200">
+                    <h3 className="font-bold text-purple-800 mb-2">📋 About 360-Degree Feedback</h3>
+                    <p className="text-sm text-gray-700 mb-2">
+                      This feedback process gathers perspectives from multiple sources including supervisors, peers, 
+                      direct reports, and self-assessment. Your honest and constructive feedback is valuable for 
+                      professional development.
+                    </p>
+                    <p className="text-sm text-gray-700 font-medium">
+                      Please provide ratings based on your direct observations and interactions with this employee.
+                    </p>
+                  </section>
+
+                  {/* Employee Information */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">Employee Being Reviewed</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee Name</label>
+                        <input
+                          type="text"
+                          name="employeeName"
+                          value={formData.employeeName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
+                        <input
+                          type="text"
+                          name="employeeId"
+                          value={formData.employeeId}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Position/Title</label>
+                        <input
+                          type="text"
+                          name="employeePosition"
+                          value={formData.employeePosition}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <input
+                          type="text"
+                          name="employeeDepartment"
+                          value={formData.employeeDepartment}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Reviewer Information */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">Your Information (Reviewer)</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <input
+                          type="text"
+                          name="reviewerName"
+                          value={formData.reviewerName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          placeholder={formData.anonymous ? "Leave blank if anonymous" : ""}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Relationship to Employee</label>
+                        <select
+                          name="reviewerRelationship"
+                          value={formData.reviewerRelationship}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          <option value="">Select Relationship</option>
+                          <option value="supervisor">Supervisor/Manager</option>
+                          <option value="peer">Peer/Colleague</option>
+                          <option value="direct_report">Direct Report</option>
+                          <option value="self">Self-Assessment</option>
+                          <option value="customer">Internal Customer/Client</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Review Date</label>
+                        <input
+                          type="date"
+                          name="reviewDate"
+                          value={formData.reviewDate}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div className="flex items-center">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            name="anonymous"
+                            checked={formData.anonymous}
+                            onChange={handleInputChange}
+                            className="mr-2"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Submit as Anonymous Feedback</span>
+                        </label>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Rating Scale */}
+                  <section className="mb-8 p-4 bg-purple-50 rounded border border-purple-200">
+                    <h3 className="font-bold text-gray-800 mb-2">Rating Scale:</h3>
+                    <div className="grid grid-cols-5 gap-2 text-sm">
+                      <div><strong>1</strong> - Needs Significant Improvement</div>
+                      <div><strong>2</strong> - Below Expectations</div>
+                      <div><strong>3</strong> - Meets Expectations</div>
+                      <div><strong>4</strong> - Exceeds Expectations</div>
+                      <div><strong>5</strong> - Outstanding/Exceptional</div>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2 italic">
+                      Select "N/A" or leave blank if you don't have sufficient interaction to rate a specific area.
+                    </p>
+                  </section>
+
+                  {/* Leadership & Vision */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      1. Leadership & Strategic Vision
+                      <span className="float-right text-base text-purple-600">
+                        Score: {leadershipScore.total}/{leadershipScore.max} ({leadershipScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Vision & Direction" 
+                      name="vision" 
+                      value={formData.vision}
+                      description="Sets clear direction and inspires others toward goals"
+                    />
+                    <ScoreInput 
+                      label="Strategic Thinking" 
+                      name="strategicThinking" 
+                      value={formData.strategicThinking}
+                      description="Thinks long-term and considers broader implications"
+                    />
+                    <ScoreInput 
+                      label="Decision Making" 
+                      name="decisionMaking" 
+                      value={formData.decisionMaking}
+                      description="Makes sound, timely decisions with available information"
+                    />
+                    <ScoreInput 
+                      label="Accountability" 
+                      name="accountability" 
+                      value={formData.accountability}
+                      description="Takes ownership of results and holds self/others accountable"
+                    />
+                    <ScoreInput 
+                      label="Delegation & Empowerment" 
+                      name="delegation" 
+                      value={formData.delegation}
+                      description="Effectively delegates tasks and empowers team members"
+                    />
+                  </section>
+
+                  {/* Communication Skills */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      2. Communication Skills
+                      <span className="float-right text-base text-purple-600">
+                        Score: {communicationScore.total}/{communicationScore.max} ({communicationScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Verbal Communication" 
+                      name="verbalCommunication" 
+                      value={formData.verbalCommunication}
+                      description="Expresses ideas clearly and effectively in conversations"
+                    />
+                    <ScoreInput 
+                      label="Written Communication" 
+                      name="writtenCommunication" 
+                      value={formData.writtenCommunication}
+                      description="Writes clearly, concisely, and professionally"
+                    />
+                    <ScoreInput 
+                      label="Active Listening" 
+                      name="activeListening" 
+                      value={formData.activeListening}
+                      description="Listens attentively and seeks to understand others"
+                    />
+                    <ScoreInput 
+                      label="Clarity & Transparency" 
+                      name="clarity" 
+                      value={formData.clarity}
+                      description="Communicates openly and keeps stakeholders informed"
+                    />
+                    <ScoreInput 
+                      label="Giving & Receiving Feedback" 
+                      name="feedback" 
+                      value={formData.feedback}
+                      description="Provides constructive feedback and accepts it graciously"
+                    />
+                  </section>
+
+                  {/* Teamwork & Collaboration */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      3. Teamwork & Collaboration
+                      <span className="float-right text-base text-purple-600">
+                        Score: {teamworkScore.total}/{teamworkScore.max} ({teamworkScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Collaboration" 
+                      name="collaboration" 
+                      value={formData.collaboration}
+                      description="Works effectively with others toward common goals"
+                    />
+                    <ScoreInput 
+                      label="Supportiveness" 
+                      name="supportiveness" 
+                      value={formData.supportiveness}
+                      description="Helps and supports team members when needed"
+                    />
+                    <ScoreInput 
+                      label="Conflict Resolution" 
+                      name="conflictResolution" 
+                      value={formData.conflictResolution}
+                      description="Addresses conflicts constructively and professionally"
+                    />
+                    <ScoreInput 
+                      label="Respect for Others" 
+                      name="respect" 
+                      value={formData.respect}
+                      description="Shows respect for diverse perspectives and backgrounds"
+                    />
+                    <ScoreInput 
+                      label="Team Contribution" 
+                      name="teamContribution" 
+                      value={formData.teamContribution}
+                      description="Actively contributes to team success and morale"
+                    />
+                  </section>
+
+                  {/* Professional Competence */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      4. Professional Competence & Expertise
+                      <span className="float-right text-base text-purple-600">
+                        Score: {competenceScore.total}/{competenceScore.max} ({competenceScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Technical Skills" 
+                      name="technicalSkills" 
+                      value={formData.technicalSkills}
+                      description="Demonstrates required technical/professional skills"
+                    />
+                    <ScoreInput 
+                      label="Problem Solving" 
+                      name="problemSolving" 
+                      value={formData.problemSolving}
+                      description="Effectively identifies and solves problems"
+                    />
+                    <ScoreInput 
+                      label="Innovation & Creativity" 
+                      name="innovation" 
+                      value={formData.innovation}
+                      description="Brings creative solutions and new ideas"
+                    />
+                    <ScoreInput 
+                      label="Quality of Work" 
+                      name="quality" 
+                      value={formData.quality}
+                      description="Produces high-quality, accurate work"
+                    />
+                    <ScoreInput 
+                      label="Subject Matter Expertise" 
+                      name="expertise" 
+                      value={formData.expertise}
+                      description="Demonstrates deep knowledge in their area"
+                    />
+                  </section>
+
+                  {/* Interpersonal Skills */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      5. Interpersonal Skills
+                      <span className="float-right text-base text-purple-600">
+                        Score: {interpersonalScore.total}/{interpersonalScore.max} ({interpersonalScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Empathy & Understanding" 
+                      name="empathy" 
+                      value={formData.empathy}
+                      description="Shows understanding and consideration for others"
+                    />
+                    <ScoreInput 
+                      label="Trustworthiness" 
+                      name="trustworthiness" 
+                      value={formData.trustworthiness}
+                      description="Is reliable, honest, and maintains confidentiality"
+                    />
+                    <ScoreInput 
+                      label="Professionalism" 
+                      name="professionalism" 
+                      value={formData.professionalism}
+                      description="Maintains professional demeanor and appearance"
+                    />
+                    <ScoreInput 
+                      label="Adaptability" 
+                      name="adaptability" 
+                      value={formData.adaptability}
+                      description="Adjusts well to change and new situations"
+                    />
+                    <ScoreInput 
+                      label="Emotional Intelligence" 
+                      name="emotional" 
+                      value={formData.emotional}
+                      description="Manages emotions well and reads social situations"
+                    />
+                  </section>
+
+                  {/* Work Ethics & Reliability */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      6. Work Ethics & Reliability
+                      <span className="float-right text-base text-purple-600">
+                        Score: {workEthicsScore.total}/{workEthicsScore.max} ({workEthicsScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Integrity & Ethics" 
+                      name="integrity" 
+                      value={formData.integrity}
+                      description="Demonstrates honesty and ethical behavior"
+                    />
+                    <ScoreInput 
+                      label="Dependability" 
+                      name="dependability" 
+                      value={formData.dependability}
+                      description="Consistently meets commitments and deadlines"
+                    />
+                    <ScoreInput 
+                      label="Initiative & Proactivity" 
+                      name="initiative" 
+                      value={formData.initiative}
+                      description="Takes initiative without being asked"
+                    />
+                    <ScoreInput 
+                      label="Time Management" 
+                      name="timeManagement" 
+                      value={formData.timeManagement}
+                      description="Manages time effectively and prioritizes well"
+                    />
+                    <ScoreInput 
+                      label="Commitment & Dedication" 
+                      name="commitment" 
+                      value={formData.commitment}
+                      description="Shows dedication to work and organizational goals"
+                    />
+                  </section>
+
+                  {/* Customer/Client Focus */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      7. Customer/Client Focus
+                      <span className="float-right text-base text-purple-600">
+                        Score: {customerScore.total}/{customerScore.max} ({customerScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Customer Service Orientation" 
+                      name="customerService" 
+                      value={formData.customerService}
+                      description="Prioritizes customer/client needs and satisfaction"
+                    />
+                    <ScoreInput 
+                      label="Responsiveness" 
+                      name="responsiveness" 
+                      value={formData.responsiveness}
+                      description="Responds promptly to requests and concerns"
+                    />
+                    <ScoreInput 
+                      label="Relationship Building" 
+                      name="relationship" 
+                      value={formData.relationship}
+                      description="Builds and maintains positive relationships"
+                    />
+                    <ScoreInput 
+                      label="Meeting Expectations" 
+                      name="expectations" 
+                      value={formData.expectations}
+                      description="Consistently meets or exceeds customer expectations"
+                    />
+                  </section>
+
+                  {/* Development & Growth */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">
+                      8. Development & Growth Mindset
+                      <span className="float-right text-base text-purple-600">
+                        Score: {developmentScore.total}/{developmentScore.max} ({developmentScore.percentage}%)
+                      </span>
+                    </h2>
+                    <ScoreInput 
+                      label="Learning Agility" 
+                      name="learning" 
+                      value={formData.learning}
+                      description="Quickly learns and applies new knowledge/skills"
+                    />
+                    <ScoreInput 
+                      label="Openness to Feedback" 
+                      name="openness" 
+                      value={formData.openness}
+                      description="Welcomes feedback and uses it for improvement"
+                    />
+                    <ScoreInput 
+                      label="Self-Awareness" 
+                      name="selfAwareness" 
+                      value={formData.selfAwareness}
+                      description="Understands own strengths and development areas"
+                    />
+                    <ScoreInput 
+                      label="Continuous Improvement" 
+                      name="improvement" 
+                      value={formData.improvement}
+                      description="Actively seeks ways to improve and grow"
+                    />
+                  </section>
+
+                  {/* Overall Score */}
+                  <section className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border-2 border-purple-600">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Overall Assessment Score</h2>
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-purple-600 mb-2">
+                        {overallScore.percentage}%
+                      </div>
+                      <div className="text-xl text-gray-700">
+                        {overallScore.total} out of {overallScore.max} points
+                      </div>
+                      <div className="mt-4 text-lg font-semibold text-gray-800">
+                        {overallScore.percentage >= 90 ? '🌟 Outstanding Performance' :
+                         overallScore.percentage >= 80 ? '✓ Exceeds Expectations' :
+                         overallScore.percentage >= 70 ? '◐ Meets Expectations' :
+                         overallScore.percentage >= 60 ? '○ Below Expectations' :
+                         '✗ Needs Significant Improvement'}
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Open-Ended Questions */}
+                  <section className="mb-8">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-purple-600 pb-2">Narrative Feedback</h2>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        What are this person's greatest strengths?
+                      </label>
+                      <textarea
+                        name="strengths"
+                        value={formData.strengths}
+                        onChange={handleInputChange}
+                        rows="4"
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Describe specific strengths you've observed..."
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        What areas would benefit most from development?
+                      </label>
+                      <textarea
+                        name="weaknesses"
+                        value={formData.weaknesses}
+                        onChange={handleInputChange}
+                        rows="4"
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Provide constructive feedback on development areas..."
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        What specific actions could this person take to improve?
+                      </label>
+                      <textarea
                         name="improvement"
                         value={formData.improvement}
                         onChange={handleInputChange}
